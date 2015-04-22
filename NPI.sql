@@ -160,3 +160,53 @@ where npi=1720027436 and npi_dest in (
   inner join npi_team_2012_2013_365.undirected b
   on a.npi = b.npi and a.npi_dest = b.npi_dest
   where a.npi = 1720027436 and a.patient_count - b.patient_count > 0) as y) c
+
+
+-- alma's work with fred. 
+-- rather than doing the calculation we are returning the foundational data points along with associated npi
+-- we removed the WHERE clauses that were restricting the query to a single npi.
+-- the resulting query may be different in nature because the npi limitation may have been doing more than just restricting the results by npi
+
+-- TO DO: 
+-- since this is a query based on sub-queries, we should use LIMIT to ensure that every sub-query is only returning 1000 npis for testing purposes
+-- using LIMIT, you should be able to ensure that the code would work on all npis, without tying up the server for hours or days
+-- then use EXPLAIN in order to verify that wherever possible, your query is leveraging indexes. Add indexes as needed.
+-- use the CREATE TABLE syntax with LIMIT removed, in order create a new data table once you have proved to yourself that the query is correct
+-- then run the query, hours or days taken up is fine.
+-- you need a way to make sure sub-queries are working on the same npi at the same time, now that the WHERE has been removed
+
+
+SELECT
+	npi, 
+	a.asum, 
+	b.bsum,
+	c.csum
+from
+(select npi, sum(patient_count) asum
+from npi_team_2012_2013_365.undirected
+where npi_dest in (
+  select a.npi_dest
+  from npi_team_2012_2013_365.undirected a
+  left join npi_team_2013_2014_365.undirected b
+  on a.npi = b.npi and a.npi_dest = b.npi_dest
+  where b.npi is null and b.npi_dest is null)) a,
+(select sum(patient_count) bsum
+from npi_team_2013_2014_365.undirected
+where npi_dest in (
+  select a.npi_dest
+  from npi_team_2013_2014_365.undirected a
+  left join npi_team_2012_2013_365.undirected b
+  on a.npi = b.npi and a.npi_dest = b.npi_dest
+  where b.npi is null and b.npi_dest is null)) b,
+  (select (x.asum + y.bsum) csum
+  from
+  (select abs(sum(a.patient_count - b.patient_count)) asum
+  from npi_team_2013_2014_365.undirected a
+  inner join npi_team_2012_2013_365.undirected b
+  on a.npi = b.npi and a.npi_dest = b.npi_dest
+  where a.patient_count - b.patient_count < 0) as x,
+  (select abs(sum(a.patient_count - b.patient_count)) bsum
+  from npi_team_2013_2014_365.undirected a
+  inner join npi_team_2012_2013_365.undirected b
+  on a.npi = b.npi and a.npi_dest = b.npi_dest
+  where a.patient_count - b.patient_count > 0) as y) c
