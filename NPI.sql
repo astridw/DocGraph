@@ -175,6 +175,8 @@ where npi=1720027436 and npi_dest in (
 -- then run the query, hours or days taken up is fine.
 -- you need a way to make sure sub-queries are working on the same npi at the same time, now that the WHERE has been removed
 
+-- Fixing this mega query is not necesarily the easiest way (can also use intermediate tables), but having a properly named four-column table with the scores for each npi is the goal
+
 
 SELECT
 	npi, 
