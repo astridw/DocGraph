@@ -224,3 +224,16 @@ WHERE npi_dest in (
   FROM npi n LIMIT 10
   INNER JOIN npi_team_2012_2013_365.undirected a
   ON npi.npi = a.npi
+  
+  -- talked to rick - he said the npi table should be able to join the the undirected table, in different folder
+  -- it might have something to do with how we are naming the tables/databases..and/or the use of aliases.
+  -- i tried to take the aliases out and changed the names a little. 
+  -- after a long load time, i got results that showed only one npi matched to its corresponding unique npi, over and over
+  -- only scrolled to second page, same results. load time was long so i did not keep looking
+  -- after this i also tried a RIGHT JOIN, for the hell of it. Loading for infinity, so I quit the browser.
+  SELECT npi.npi, npi_team_2012_2013_365.undirected.npi
+  FROM npi.npi
+  INNER JOIN npi_team_2012_2013_365.undirected
+  ON npi.npi = npi_team_2012_2013_365.undirected.npi
+
+  
