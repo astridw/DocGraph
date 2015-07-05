@@ -108,6 +108,9 @@ SELECT a.npi, a.npi_dest
 FROM npi_team_2012_2013_365.undirected a
 LEFT JOIN acountee.Npi_Relationship b ON a.npi = b.npi AND a.npi_dest = b.npi_dest
 WHERE b.npi is NULL  and b.npi_dest is NULL
+LIMIT 100000
+--this query is correct, but cannot be completed because of error message The total number of locks exceeds the lock table size
+--in order to insert, I had to keep running by limiting by 1000
 
 /*
 --check to see if records missing query above is correct by comparing to 2013-2014
