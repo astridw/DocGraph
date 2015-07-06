@@ -14,7 +14,7 @@ ON a.npi = b.npi AND a.npi_dest = b.npi_dest
 SELECT NPI
 FROM Npi_Unique
 GROUP BY NPI
-HAVING count(*) > 1;
+HAVING count(*) > 1
 --check done
 
 
@@ -99,6 +99,8 @@ FROM npi_team_2012_2013_365.undirected a
 LEFT JOIN acountee.Npi_Relationship b ON a.npi = b.npi AND a.npi_dest = b.npi_dest
 WHERE b.npi is NULL  and b.npi_dest is NULL
 --45972658 total missing
+--38912658 total
+--36112658 total
 
 
 --insert statement to add missing records
