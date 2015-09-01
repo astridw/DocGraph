@@ -101,6 +101,7 @@ WHERE b.npi is NULL  and b.npi_dest is NULL
 --45972658 total missing
 --38912658 total
 --36112658 total
+--11112658 total,
 
 
 --insert statement to add missing records
@@ -113,6 +114,15 @@ WHERE b.npi is NULL  and b.npi_dest is NULL
 LIMIT 100000
 --this query is correct, but cannot be completed because of error message The total number of locks exceeds the lock table size
 --in order to insert, I had to keep running by limiting by 1000
+
+--insert statement to add missing records from 2013-2014-----------------------------------------
+INSERT INTO Npi_Relationship
+(NPI, NPI_Dest)
+SELECT a.npi, a.npi_dest
+FROM npi_team_2013_2014_365.undirected a
+LEFT JOIN acountee.Npi_Relationship b ON a.npi = b.npi AND a.npi_dest = b.npi_dest
+WHERE b.npi is NULL  and b.npi_dest is NULL and Table_Year is NULL
+LIMIT 100000
 
 /*
 --check to see if records missing query above is correct by comparing to 2013-2014
@@ -149,9 +159,23 @@ WHERE b.npi NOT IN acountee.npi
 
 SELECT DISTINCT b.npi,b.npi_dest
 FROM npi_team_2013_2014_365.undirected b
-INNER JOIN acountee.npi_relationship a
+LEFT JOIN  acountee.npi_relationship a
 ON a.npi = b.npi AND a.npi_dest = b.npi_dest
 WHERE b.npi NOT IN acountee.npi_relationship
 
+
+INSERT INTO Npi_Relationship
+(NPI, NPI_Dest)
+SELECT a.npi, a.npi_dest
+FROM npi_team_2012_2013_365.undirected a
+LEFT JOIN acountee.Npi_Relationship b ON a.npi = b.npi AND a.npi_dest = b.npi_dest
+WHERE b.npi is NULL  and b.npi_dest is NULL
+EXCEPT
+SELECT b.npi,b.npi_dest
+FROM npi_team_2013_2014_365.undirected b
+LEFT JOIN  acountee.npi_relationship a
+ON a.npi = b.npi AND a.npi_dest = b.npi_dest
+WHERE b.npi NOT IN acountee.npi_relationship
+LIMIT 100000
 
 /* Directed */
